@@ -6,6 +6,7 @@ module Node.FS.Extra
   , ensureLink
   , ensureSymlink
   , move
+  , outputFile
   , pathExists
   , remove
   ) where
@@ -15,6 +16,7 @@ import Prelude
 import Control.Promise (Promise, toAffE)
 import Effect.Aff (Aff)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
+import Node.Buffer (Buffer)
 import Node.Path (FilePath)
 
 foreign import unsafeRequireFS :: forall r. { |r }
@@ -26,6 +28,7 @@ fs ::
   , ensureLink :: EffectFn2 FilePath FilePath (Promise Unit)
   , ensureSymlink :: EffectFn2 FilePath FilePath (Promise Unit)
   , move :: EffectFn2 FilePath FilePath (Promise Unit)
+  , outputFile :: EffectFn2 FilePath Buffer (Promise Unit)
   , pathExists :: EffectFn1 FilePath (Promise Unit)
   , remove :: EffectFn1 FilePath (Promise Unit)
   }
@@ -65,6 +68,12 @@ ensureSymlink = compose toAffE <<< runEffectFn2 fs.ensureSymlink
 -- Moves a file or directory, even across devices.
 move :: FilePath -> FilePath -> Aff Unit
 move = compose toAffE <<< runEffectFn2 fs.move
+
+-- Almost the same as `writeFile` (i.e. it
+-- [overwrites](http://pages.citebite.com/v2o5n8l2f5reb)), except that if the
+-- parent directory does not exist, it's created.
+outputFile :: FilePath -> Buffer -> Aff Unit
+outputFile = compose toAffE <<< runEffectFn2 fs.outputFile
 
 -- Test whether or not the given path exists by checking with the file system.
 -- Like

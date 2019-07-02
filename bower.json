@@ -18,7 +18,8 @@
   ],
   "dependencies": {
     "purescript-node-path": "^3.0.0",
-    "purescript-aff-promise": "^2.1.0"
+    "purescript-aff-promise": "^2.1.0",
+    "purescript-node-buffer": "^5.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"
