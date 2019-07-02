@@ -17,59 +17,64 @@ import Effect.Aff (Aff)
 import Effect.Uncurried (EffectFn1, EffectFn2, runEffectFn1, runEffectFn2)
 import Node.Path (FilePath)
 
+foreign import unsafeRequireFS :: forall r. { |r }
+fs ::
+  { copy :: EffectFn2 FilePath FilePath (Promise Unit)
+  , emptyDir :: EffectFn1 FilePath (Promise Unit)
+  , ensureDir :: EffectFn1 FilePath (Promise Unit)
+  , ensureFile :: EffectFn1 FilePath (Promise Unit)
+  , ensureLink :: EffectFn2 FilePath FilePath (Promise Unit)
+  , ensureSymlink :: EffectFn2 FilePath FilePath (Promise Unit)
+  , move :: EffectFn2 FilePath FilePath (Promise Unit)
+  , pathExists :: EffectFn1 FilePath (Promise Unit)
+  , remove :: EffectFn1 FilePath (Promise Unit)
+  }
+fs = unsafeRequireFS
+
 -- Copy a file or directory. The directory can have contents. Like `cp -r`.
 copy :: FilePath -> FilePath -> Aff Unit
-copy = compose toAffE <<< runEffectFn2 copy_
-foreign import copy_ :: EffectFn2 FilePath FilePath (Promise Unit)
+copy = compose toAffE <<< runEffectFn2 fs.copy
 
 -- Ensures that a directory is empty. Deletes directory contents if the
 -- directory is not empty. If the directory does not exist, it is created. The
 -- directory itself is not deleted.
 emptyDir :: FilePath -> Aff Unit
-emptyDir = toAffE <<< runEffectFn1 emptyDir_
-foreign import emptyDir_ :: EffectFn1 FilePath (Promise Unit)
+emptyDir = toAffE <<< runEffectFn1 fs.emptyDir
 
 -- Ensures that the directory exists. If the directory structure does not exist,
 -- it is created. Like `mkdir -p`.
 ensureDir :: FilePath -> Aff Unit
-ensureDir = toAffE <<< runEffectFn1 ensureDir_
-foreign import ensureDir_ :: EffectFn1 FilePath (Promise Unit)
+ensureDir = toAffE <<< runEffectFn1 fs.ensureDir
 
 -- Ensures that the file exists. If the file that is requested to be created is
 -- in directories that do not exist, these directories are created. If the file
 -- already exists, it is **NOT MODIFIED**.
 ensureFile :: FilePath -> Aff Unit
-ensureFile = toAffE <<< runEffectFn1 ensureFile_
-foreign import ensureFile_ :: EffectFn1 FilePath (Promise Unit)
+ensureFile = toAffE <<< runEffectFn1 fs.ensureFile
 
 -- Ensures that the link exists. If the directory structure does not exist, it
 -- is created.
 ensureLink :: FilePath -> FilePath -> Aff Unit
-ensureLink = compose toAffE <<< runEffectFn2 ensureLink_
-foreign import ensureLink_ :: EffectFn2 FilePath FilePath (Promise Unit)
+ensureLink = compose toAffE <<< runEffectFn2 fs.ensureLink
 
 -- Ensures that the symlink exists. If the directory structure does not exist,
 -- it is created.
 ensureSymlink :: FilePath -> FilePath -> Aff Unit
-ensureSymlink = compose toAffE <<< runEffectFn2 ensureSymlink_
-foreign import ensureSymlink_ :: EffectFn2 FilePath FilePath (Promise Unit)
+ensureSymlink = compose toAffE <<< runEffectFn2 fs.ensureSymlink
 
 -- Moves a file or directory, even across devices.
 move :: FilePath -> FilePath -> Aff Unit
-move = compose toAffE <<< runEffectFn2 move_
-foreign import move_ :: EffectFn2 FilePath FilePath (Promise Unit)
+move = compose toAffE <<< runEffectFn2 fs.move
 
 -- Test whether or not the given path exists by checking with the file system.
 -- Like
--- [`fs.exists`](https://nodejs.org/api/fs.html#fs_fs_exists_path_callback), but
+-- [`fs.exists`](https://nodejs.org/api/fs.html#fsfsexistspathcallback), but
 -- with a normal callback signature (err, exists). Uses `fs.access` under the
 -- hood.
 pathExists :: FilePath -> Aff Unit
-pathExists = toAffE <<< runEffectFn1 pathExists_
-foreign import pathExists_ :: EffectFn1 FilePath (Promise Unit)
+pathExists = toAffE <<< runEffectFn1 fs.pathExists
 
 -- Removes a file or directory. The directory can have contents. If the path
 -- does not exist, silently does nothing. Like `rm -rf`.
-remove :: FilePath -> FilePath -> Aff Unit
-remove = compose toAffE <<< runEffectFn2 remove_
-foreign import remove_ :: EffectFn2 FilePath FilePath (Promise Unit)
+remove :: FilePath -> Aff Unit
+remove = toAffE <<< runEffectFn1 fs.remove
