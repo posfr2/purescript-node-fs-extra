@@ -1,0 +1,26 @@
+{
+  "name": "purescript-node-fs-extra",
+  "description": "A PureScript binding to fs-extra",
+  "keywords": [
+    "purescript",
+    "fs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nonbili/purescript-node-fs-extra.git"
+  },
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-node-path": "^3.0.0",
+    "purescript-aff-promise": "^2.1.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0"
+  }
+}

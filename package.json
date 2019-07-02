@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "devDependencies": {
+    "fs-extra": "^8.1.0"
+  }
+}
