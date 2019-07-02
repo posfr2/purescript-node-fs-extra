@@ -29,7 +29,7 @@ fs ::
   , ensureSymlink :: EffectFn2 FilePath FilePath (Promise Unit)
   , move :: EffectFn2 FilePath FilePath (Promise Unit)
   , outputFile :: EffectFn2 FilePath Buffer (Promise Unit)
-  , pathExists :: EffectFn1 FilePath (Promise Unit)
+  , pathExists :: EffectFn1 FilePath (Promise Boolean)
   , remove :: EffectFn1 FilePath (Promise Unit)
   }
 fs = unsafeRequireFS
@@ -80,7 +80,7 @@ outputFile = compose toAffE <<< runEffectFn2 fs.outputFile
 -- [`fs.exists`](https://nodejs.org/api/fs.html#fsfsexistspathcallback), but
 -- with a normal callback signature (err, exists). Uses `fs.access` under the
 -- hood.
-pathExists :: FilePath -> Aff Unit
+pathExists :: FilePath -> Aff Boolean
 pathExists = toAffE <<< runEffectFn1 fs.pathExists
 
 -- Removes a file or directory. The directory can have contents. If the path
